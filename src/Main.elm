@@ -82,16 +82,12 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     Element.layout [ Bg.image "bg.jpg" ]
-        (Element.column
-            [ Element.centerX ]
-            [ case model.page of
-                InputPage { minutes } ->
-                    viewInputBox minutes
+        (case model.page of
+            InputPage { minutes } ->
+                viewInputBox minutes
 
-                CountdownPage countdown ->
-                    viewCountdown model.now countdown.endTime
-            , Element.text <| String.fromInt (Time.toSecond Time.utc model.now)
-            ]
+            CountdownPage countdown ->
+                viewCountdown model.now countdown.endTime
         )
 
 
