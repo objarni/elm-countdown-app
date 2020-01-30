@@ -2,7 +2,8 @@ module Main exposing (main)
 
 import Browser
 import Element exposing (Element)
-import Element.Background as Bg
+import Element.Background as Background
+import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
@@ -81,7 +82,7 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    Element.layout [ Bg.image "bg.jpg" ]
+    Element.layout [ Background.image "bg.jpg" ]
         (case model.page of
             InputPage { minutes } ->
                 viewInputBox minutes
@@ -112,7 +113,7 @@ viewInputBox minutes =
             -- these two centers the Element.text in div
             [ Element.centerX, Element.centerY ]
             (Element.column
-                [ Bg.color (Element.rgba 1 1 1 1)
+                [ Background.color (Element.rgba 1 1 1 1)
                 , Element.padding 20
                 , Element.spacing 10
                 ]
@@ -154,23 +155,35 @@ viewCountdown now endTime =
             Time.toSecond Time.utc countdown
     in
     Element.el
-        [ Element.centerX -- these two centers the div
+        [ Element.centerX
+        , Border.width 3
+        , Border.rounded 10
+        , Border.color <| Element.rgb 0 0 0
         , Element.centerY
-        , Bg.color (Element.rgba 1 1 1 0.8)
-        , Element.width (Element.px 350)
-        , Element.height (Element.px 150)
+        , Background.color (Element.rgba 0.5 0.5 0.5 0.2)
+        , Element.padding 15
         ]
         (Element.el
-            -- these two centers the Element.text in div
-            [ Element.centerX
+            [ Element.centerX -- these two centers the div
             , Element.centerY
+            , Background.color (Element.rgba 1 1 1 0.8)
+            , Element.width (Element.px 350)
+            , Element.height (Element.px 150)
             ]
-            (Element.row
-                [ Font.size 58 ]
-                [ Element.text <| pad <| String.fromInt minutes
-                , Element.text " : "
-                , Element.text <| pad <| String.fromInt seconds
+            (Element.el
+                -- these two centers the Element.text in div
+                [ Element.centerX
+                , Element.centerY
                 ]
+                (Element.row
+                    [ Font.size 58 ]
+                    [ Element.text "T - "
+                    , Element.text <| String.fromInt minutes
+                    , Element.text "m "
+                    , Element.text <| pad <| String.fromInt seconds
+                    , Element.text "s"
+                    ]
+                )
             )
         )
 
