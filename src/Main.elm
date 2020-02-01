@@ -61,7 +61,7 @@ update msg model =
                     Time.posixToMillis model.now
 
                 countdownMs =
-                    minutes * 5 * 1000
+                    minutes * 60 * 1000
             in
             ( { model
                 | page =
