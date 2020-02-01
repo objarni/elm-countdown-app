@@ -61,7 +61,7 @@ update msg model =
                     Time.posixToMillis model.now
 
                 countdownMs =
-                    minutes * 60 * 1000
+                    minutes * 5 * 1000
             in
             ( { model
                 | page =
@@ -163,12 +163,26 @@ viewCountdown now endTime =
                     0
 
         seconds =
+            Time.toSecond Time.utc countdown
+
+        secondsVisual =
             case timeLeft of
                 True ->
-                    Time.toSecond Time.utc countdown
+                    seconds
 
                 False ->
                     0
+
+        mainBackgroundColor =
+            case ( timeLeft, modBy 2 seconds ) of
+                ( True, _ ) ->
+                    Element.rgba 1 1 1 0.8
+
+                ( False, 0 ) ->
+                    Element.rgba 1 0 1 0.8
+
+                ( False, _ ) ->
+                    Element.rgba 0 1 0 0.8
     in
     Element.el
         [ Element.centerX
@@ -182,7 +196,7 @@ viewCountdown now endTime =
         (Element.el
             [ Element.centerX -- these two centers the div
             , Element.centerY
-            , Background.color (Element.rgba 1 1 1 0.8)
+            , Background.color mainBackgroundColor
             , Element.width (Element.px 350)
             , Element.height (Element.px 150)
             ]
@@ -196,7 +210,7 @@ viewCountdown now endTime =
                     [ Element.text "T - "
                     , Element.text <| String.fromInt minutes
                     , Element.text "m "
-                    , Element.text <| pad <| String.fromInt seconds
+                    , Element.text <| pad <| String.fromInt secondsVisual
                     , Element.text "s"
                     ]
                 )
