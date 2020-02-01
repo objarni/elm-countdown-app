@@ -7,6 +7,7 @@ import Element.Border as Border
 import Element.Font as Font
 import Element.Input as Input
 import Html exposing (Html)
+import Html.Attributes exposing (style)
 import Time
 
 
@@ -14,6 +15,15 @@ type alias Model =
     { now : Time.Posix
     , page : Page
     }
+
+
+init : () -> ( Model, Cmd a )
+init _ =
+    ( { now = Time.millisToPosix 0
+      , page = InputPage { minutes = 10 }
+      }
+    , Cmd.none
+    )
 
 
 type Page
@@ -25,15 +35,6 @@ type Msg
     = SetMinutesTo Int
     | GotoCountdown Int
     | Tick Time.Posix
-
-
-init : () -> ( Model, Cmd a )
-init _ =
-    ( { now = Time.millisToPosix 0
-      , page = InputPage { minutes = 10 }
-      }
-    , Cmd.none
-    )
 
 
 update : Msg -> Model -> ( Model, Cmd a )
@@ -83,12 +84,14 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     Element.layout [ Background.image "bg.jpg" ]
-        (case model.page of
-            InputPage { minutes } ->
-                viewInputBox minutes
+        (Element.column [ Element.centerX, Element.centerY ]
+            [ case model.page of
+                InputPage { minutes } ->
+                    viewInputBox minutes
 
-            CountdownPage countdown ->
-                viewCountdown model.now countdown.endTime
+                CountdownPage countdown ->
+                    viewCountdown model.now countdown.endTime
+            ]
         )
 
 
@@ -148,11 +151,24 @@ viewCountdown now endTime =
         pad n =
             String.padLeft 2 '0' n
 
+        timeLeft =
+            countdownMs > 0
+
         minutes =
-            Time.toMinute Time.utc countdown
+            case timeLeft of
+                True ->
+                    Time.toMinute Time.utc countdown
+
+                False ->
+                    0
 
         seconds =
-            Time.toSecond Time.utc countdown
+            case timeLeft of
+                True ->
+                    Time.toSecond Time.utc countdown
+
+                False ->
+                    0
     in
     Element.el
         [ Element.centerX
